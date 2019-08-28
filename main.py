@@ -1,6 +1,7 @@
 # Grouping mensages by users
 
-import json, datetime
+import json
+from datetime import datetime
 
 print('Reading Json File...\n')
 with open('U1ZQR43RB.json') as json_file:
@@ -14,9 +15,10 @@ for idx in U1ZQR43RB:
     if idx['user'] in result.keys():
         found = False
         for ts in result[idx['user']].keys():
-            min = datetime.datetime.fromtimestamp(float(ts)/1000)
-            max = datetime.datetime.fromtimestamp(float(idx['ts'])/1000)
-            delta = (max-min).total_seconds() / 60
+            min = float(ts)/1000
+            max = float(idx['ts'])/1000
+            delta = (datetime.utcfromtimestamp(max) - datetime.utcfromtimestamp(min)).total_seconds() / 60
+            print(delta)
             if delta < 2:
                 found = True
                 break
@@ -27,13 +29,15 @@ for idx in U1ZQR43RB:
             result[idx['user']][idx['ts']] = list()
             result[idx['user']][idx['ts']].append(idx)
     else:
-        print('Not yet')
         result[idx['user']] = dict()
         result[idx['user']][idx['ts']] = list()
         result[idx['user']][idx['ts']].append(idx)
 
-print(result['USLACKBOT'])
+print(result['U1ZQR43RB'].keys())
+print('\n... Done!')
 
+print('\nWriting File!...')
 for user in result:
     with open('data/' + user + '.json', 'w') as f:
         json.dump(result[user], f)
+print('...Complete!!')
